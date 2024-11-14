@@ -1,1 +1,1 @@
-readme
+KENYA DECIDES-2027 Application showcases the six-piece outcome of 2027 general election results in an integral manner
