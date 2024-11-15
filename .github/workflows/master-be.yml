@@ -1,0 +1,13 @@
+name: CI/CD On BE
+
+on:
+ push:
+  branches: [master]
+
+defaults:
+ run:
+  working-directory: ../general-election-be
+
+jobs:
+ build:
+  runs-on: ubuntu-latest

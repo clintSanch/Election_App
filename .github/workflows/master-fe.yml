@@ -1,0 +1,12 @@
+name: CI/CD on FE
+
+on:
+ push:
+  branches: [master]
+
+defaults:
+ run:
+  working-directory: ../Generat-Election-FE
+jobs:
+ build:
+  runs-on: ubuntu-latest
