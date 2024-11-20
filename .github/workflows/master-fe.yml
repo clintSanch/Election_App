@@ -3,10 +3,60 @@ name: CI/CD on FE
 on:
  push:
   branches: [master]
+ pull_request:
+  branches: []
 
 defaults:
  run:
   working-directory: ../Generat-Election-FE
 jobs:
  build:
+  name: Nodejs Install and Build
   runs-on: ubuntu-latest
+
+  strategy:
+   matrix:
+    node-version: [22.x]
+
+  steps:
+   - name: Checkout repository
+     uses: actions/checkout@v4
+
+   - name: Use Node.js ${{ matrix.node-version }}
+     uses: actions/setup-node@v2
+     with:
+      node-version: ${{ matrix.node-version }}
+      cache: 'npm'
+      cache-dependency-path: '../Generat-Election-FE/package-lock.json'
+
+   - run: npm install
+     working-directory: ../Generat-Election-FE
+   - run: npm run build --if-present
+     working-directory: ../Generat-Election-FE          
+
+ docker:
+  needs: build
+  name: Docker Build and Push
+  runs-on: ubuntu-latest
+  steps:
+   - name: checkout
+     uses: actions/checkout@v3
+
+   - name: Login to Docker Hub
+     uses: docker/login-action@v3
+     with:
+      username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      password: ${{ secrets.DOCKER_HUB_PASSWORD}} 
+   - name: Set Up Docker Buildx
+     uses: docker/setup-buildx-action@v3
+
+   - name: Build and Push Generat-Election-FE
+     uses: docker/build-push-action@v6
+     with:
+      context: ../Generat-Election-FE
+      file: ../Generat-Election-FE/Dockerfile
+      push: true
+      tags: ${{ secrets.DOCKER_HUB_USERNAME }}/Generat-Election-FE:latest    
+
+
+
