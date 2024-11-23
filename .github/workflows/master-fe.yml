@@ -5,7 +5,7 @@ on:
   branches: [master]
  pull_request:
   branches: []
-  
+
 jobs:
  docker:
   name: Docker Build and Push
@@ -25,10 +25,10 @@ jobs:
    - name: Build and Push Generat-Election-FE
      uses: docker/build-push-action@v6
      with:
-      context: ../../Generat-Election-FE
-      file: ../../Generat-Election-FE/Dockerfile
+      context: Generat-Election-FE
+      file: ./Generat-Election-FE/Dockerfile
       push: true
-      tags: ${{ secrets.DOCKER_HUB_USERNAME }}/Generat-Election-FE:latest 
+      tags: ${{ secrets.DOCKER_HUB_USERNAME }}/generat-election-fe:latest 
 
 
 
