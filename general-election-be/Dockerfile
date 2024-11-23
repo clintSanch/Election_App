@@ -1,7 +1,7 @@
 FROM node:22
 # Set the working directory in the container
 WORKDIR /general-election-be
-COPY package*.json ./
+COPY package*.json .
 RUN npm install
 COPY . .
 RUN npm run build
