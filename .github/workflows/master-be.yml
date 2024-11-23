@@ -25,7 +25,7 @@ jobs:
    - name: Build and Push general-election-be
      uses: docker/build-push-action@v6
      with:
-      context: general-Election-be
+      context: general-election-be
       file: ./general-election-be/Dockerfile
       push: true
       tags: ${{ secrets.DOCKER_HUB_USERNAME }}/general-election-be:latest
