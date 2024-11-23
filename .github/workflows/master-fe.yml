@@ -5,37 +5,9 @@ on:
   branches: [master]
  pull_request:
   branches: []
-
-defaults:
- run:
-  working-directory: ../../Generat-Election-FE
+  
 jobs:
- build:
-  name: Nodejs Install and Build
-  runs-on: ubuntu-latest
-
-  strategy:
-   matrix:
-    node-version: [22]
-
-  steps:
-   - name: Checkout repository
-     uses: actions/checkout@v4
-
-   - name: Use Node.js ${{ matrix.node-version }}
-     uses: actions/setup-node@v2
-     with:
-      node-version: ${{ matrix.node-version }}
-      cache: 'npm'
-      cache-dependency-path: '../../Generat-Election-FE/package-lock.json'
-
-   - run: npm install
-     working-directory: ../../Generat-Election-FE
-   - run: npm run build --if-present
-     working-directory: ../../Generat-Election-FE          
-
  docker:
-  needs: build
   name: Docker Build and Push
   runs-on: ubuntu-latest
   steps:
