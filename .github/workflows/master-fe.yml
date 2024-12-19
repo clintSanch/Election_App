@@ -28,7 +28,25 @@ jobs:
       context: Generat-Election-FE
       file: ./Generat-Election-FE/Dockerfile
       push: true
-      tags: ${{ secrets.DOCKER_HUB_USERNAME }}/generat-election-fe:latest 
+      tags: ${{ secrets.DOCKER_HUB_USERNAME }}/generat-election-fe:latest
 
+   - name: Configure AWS credentials
+     uses: aws-actions/configure-aws-credentials@v3
+     with:
+      role-to-assume: arn:aws:iam::${{ secrets.ACCESS_KEY_ID}}:role/generat-election-fe
+      aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      aws-region: ${{secrets.AWS_REGION}}
 
+   - name: Login to AWS ECR
+     id: login-ecr
+     uses: aws-actions/amazon-ecr-login@v2
 
+   - name: Build, tag, and push image to ECR
+     env:
+      ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      ECR_REPOSITORY: general-election-fe
+      IMAGE_TAG: ${{ github.sha }}
+     run: |
+      docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG general-election-fe
+      docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG      
