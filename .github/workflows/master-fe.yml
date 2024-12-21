@@ -9,6 +9,7 @@ on:
 jobs:
  docker:
   name: Docker Build and Push
+  environment: Preview
   runs-on: ubuntu-latest
   steps:
    - name: checkout
@@ -30,6 +31,13 @@ jobs:
       push: true
       tags: ${{ secrets.DOCKER_HUB_USERNAME }}/generat-election-fe:latest
 
+      
+ aws:
+  name: Configure AWS credentials
+  environment: Staging
+  runs-on: ubuntu-latest
+  needs: docker
+  steps:
    - name: Configure AWS credentials
      uses: aws-actions/configure-aws-credentials@v3
      with:
