@@ -9,8 +9,11 @@ on:
 jobs:
  docker:
   name: Docker Build and Push
-  environment: Preview
-  runs-on: ubuntu-latest
+  environment: ${{ github.ref == 'refs/heads/master' && 'Preview' }}
+  strategy:
+   matrix:
+    os: [ubuntu-latest, windows-latest, macos-latest]
+  runs-on: ${{ matrix.os }}
   steps:
    - name: checkout
      uses: actions/checkout@v3
@@ -33,8 +36,11 @@ jobs:
 
  aws:
   name: AWS ECR
-  environment: Staging
-  runs-on: ubuntu-latest
+  environment: ${{ github.ref == 'refs/heads/master' && 'Staging' || 'Production' }}
+  strategy:
+   matrix:
+    os: [ubuntu-latest, windows-latest, macos-latest]
+  runs-on: ${{ matrix.os }}
   needs: docker
   steps:
    - name: Configure AWS credentials
