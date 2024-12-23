@@ -7,9 +7,46 @@ on:
   branches: []
 
 jobs:
+ nodejs_build:
+  name: NodeJS Build
+  strategy:
+   matrix:
+    os: [ubuntu-latest, windows-latest, macos-latest]
+  runs-on: ${{ matrix.os }}
+  steps:
+   - name: checkout repository
+     uses: actions/checkout@v3
+
+   - name: Use NodeJS
+     uses: actions/setup-node@v3
+     with:
+      node-version: 23
+   - run: |
+      npm install
+      npm run build
+
+ test_built_app:
+  name: Test built app
+  needs: nodejs_build
+  strategy:
+   matrix:
+    os: [ubuntu-latest, windows-latest, macos-latest]
+  runs-on: ${{ matrix.os }}
+  steps: 
+   - name: checkout repository
+     uses: actions/checkout@v3
+
+   - name: Use NodeJS
+     uses: actions/setup-node@v3
+     with:
+      node-version: 23
+   - run: |
+      npm install
+      npm run test
+      npm run test:debug
+
  docker:
   name: Docker Build and Push
-  environment: ${{ github.ref == 'refs/heads/master' && 'Preview' }}
   strategy:
    matrix:
     os: [ubuntu-latest, windows-latest, macos-latest]
@@ -34,9 +71,9 @@ jobs:
       push: true
       tags: ${{ secrets.DOCKER_HUB_USERNAME }}/general-election-be:latest
 
+
  aws:
   name: AWS ECR
-  environment: ${{ github.ref == 'refs/heads/master' && 'Staging' || 'Production' }}
   strategy:
    matrix:
     os: [ubuntu-latest, windows-latest, macos-latest]
