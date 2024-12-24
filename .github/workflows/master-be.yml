@@ -7,37 +7,36 @@ on:
   branches: []
 
 jobs:
- nodejs_build:
-  name: NodeJS Build
+ docker-build:
+  name: Docker Build and Push
   runs-on: ubuntu-latest
   steps:
-   - name: checkout repository
+   - name: checkout
      uses: actions/checkout@v3
 
-   - name: Use NodeJS
-     uses: actions/setup-node@v3
-     with:
-      node-version: 23
-   - run: |
-      npm install
-      npm run build
+   - name: docker build
+     run: docker build -t general-election-be:${{ github.sha }} general-election-be
 
- test_built_app:
-  name: Test built app
-  needs: nodejs_build
+ test-docker-image:
+  name: Test Docker Image
   runs-on: ubuntu-latest
-  steps: 
-   - name: checkout repository
-     uses: actions/checkout@v3
+  needs: docker-build
+  steps:
+    - name: run tests
+      run: docker run general-election-be:${{ github.sha }} npm test
 
-   - name: Use NodeJS
-     uses: actions/setup-node@v3
-     with:
-      node-version: 23
-   - run: |
-      npm install
-      npm run test
-      npm run test:debug
+ deploy-docker-image:
+  name: Deploy Docker Image
+  runs-on: ubuntu-latest
+  needs: test-docker-image
+  steps:
+    - name: login to docker hub
+      run: echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+    - name: push Docker image
+      run: |
+       docker tag generat-election-fe:${{ github.sha }} ${{ secrets.DOCKER_HUB_USERNAME }}/general-election-be:${{ github.sha }}
+       docker push ${{ secrets.DOCKER_HUB_USERNAME }}/general-election-be:${{ github.sha }}
 
  docker:
   name: Docker Build and Push
