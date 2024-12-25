@@ -1,0 +1,1 @@
+The shared folder includes modules or services that are used across multiple features of the application. This ensures reusability and avoids duplication of common functionalities.
